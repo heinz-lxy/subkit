@@ -1,5 +1,5 @@
-from SubUtility import frame_batch_processor 
-from SubUtility import sub_format, word_capture, word_replace, gen_srt
+from utilities import frame_batch_processor 
+from utilities import sub_format, word_capture, word_replace, gen_srt
 from gui import *
 
 def run():
@@ -9,9 +9,7 @@ def run():
         choice = menu.curselection()
         choice = choice[0] if choice else 0
         db = databases[choice]
-        print(db)
         keyword = input_box.get()
-        print(keyword)
 
     def trans_sub_format():
         video_id = input_box.get()
@@ -25,7 +23,6 @@ def run():
         from threading import Thread
         global fbp
         fbp = frame_batch_processor()
-        print('hi')
         thread = Thread(target=fbp.batch_run, args=())
         thread.daemon = True
         thread.start()
@@ -61,10 +58,7 @@ def run():
         
     fbp = None
     input_box = app.input(search)
-    # app.label('white threshold')
-    # app.input(search)
-    # app.label('consistency')
-    # app.input(search)
+
     app.button('batch shots',trans_batch_shots)
     app.button('tune shot',trans_tune_shots)
     app.button('cancel shot',cancel_shot)
@@ -85,9 +79,3 @@ if __name__ == '__main__':
 
 
     run()
-    # word_replace(172)
-    # gen_srt(172)
-    # fp = frame_processor()
-    # fp.run()
-
-      
