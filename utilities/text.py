@@ -26,14 +26,13 @@ def word_replace(video_id):
         f.write(text)        
         f.close()
 
-
 def sub_format(video_id):
     video = 'wp%s'%(video_id) 
     src = r'H:\字幕专家\%s\%s.txt'%(video,video)
     dest = r'H:\字幕专家\%s\%s-2.txt'%(video,video)
     f1 = open(src,'r')
     f2 = open(dest,'w')
-    text = f1.read()、
+    text = f1.read()
     pairs =[
         [" i "," I "],
         [" u ","you"],

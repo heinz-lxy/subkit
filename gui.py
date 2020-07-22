@@ -13,7 +13,8 @@ class App():
 
     def button(self, text, callback):
         btn = Button(self.instance, text = text, command = callback)
-        btn.pack()
+        # btn.pack()\
+        return btn
 
     def text(self, width=100, height=100):
         text = Text(self.instance, width=width, height=height)
@@ -21,7 +22,9 @@ class App():
 
     def label(self, text, **props): # text, bg, width, height, wraplength, justify
         tk_label = Label(self.instance, text = text, **props)
-        tk_label.pack()
+        # tk_label.pack()
+        print(1)
+        return tk_label
 
     def menu(self, items):
         tk_list = Listbox(self.instance)
@@ -34,7 +37,7 @@ class App():
         tk_input = Entry(self.instance)
         # tk_input.place(height=300, width=100)
         tk_input.bind('<Return>', callback)
-        tk_input.pack()  #side = LEFT
+        # tk_input.pack()  #side = LEFT
         return tk_input
 
     def set_title(self, title):

@@ -6,21 +6,6 @@ from threading import Thread
 import time
 import re
 
-class VideoStream(object):
-    def __init__(self, src=0):
-        self.capture = cv2.VideoCapture(src)
-        self.thread = Thread(target=self.update, args=())
-        self.thread.daemon = True
-        self.thread.start()
-        self.frame = None 
-
-    def update(self): 
-        while True:
-            (self.status, self.frame) = self.capture.read()
-
-    def get_frame(self):
-        return self.frame
-        
 class frame_processor:
     def __init__(self, video_path, save_folder):
         self.vc = cv2.VideoCapture(video_path) 
@@ -92,9 +77,6 @@ class frame_processor:
             sample_left = int(screen_width/2-(caption_upper-caption_lower))
             sample_right = int(screen_width/2+(caption_upper-caption_lower)) # sample_left = 36 # sample_right = 131
             sample_region = frame[caption_lower:caption_upper,sample_left:sample_right]
-            # sample_region = frame[604:648,134:234]
-            # caption_lower = 604
-            # caption_upper = 648 
             
             sample_region = cv2.cvtColor(sample_region, cv2.COLOR_BGR2GRAY)
             
@@ -106,7 +88,6 @@ class frame_processor:
             vertical_shape_vector = sample_region.sum(axis=1)
             horizontal_shape_vector = sample_region.sum(axis=0)
 
-            # print(vertical_shape_vector)
             shape_std = np.std(vertical_shape_vector)/np.mean(vertical_shape_vector)
             if(shape_std<0.5 and shape_std>1):
                 continue
@@ -121,14 +102,11 @@ class frame_processor:
             area = width * height
             ratio = white_total / area
   
-            print(ratio)
             if(ratio<0.05 or ratio>0.8):
                 continue 
-            # if(shape_std<10 or shape_std>20):
-            #     continue
+          
             try:
                 diff = self.calc_vector_distance(vertical_shape_vector, self.prev_frame)
-                # print(diff)
             except Exception as e:
                 pass
             else:
@@ -152,55 +130,12 @@ class frame_batch_processor:
         self.fp.stop()
         self.running = False
 
-    def batch_run(self):
-        video_folder = r'H:\字幕专家\#batch'
-        for video in t.files(video_folder):
-            if(not self.running):
-                break
-            if(not 'mp4' in video):
-                continue
-            video_path = t.path_join(video_folder,video)
-            save_folder = video[:5]
-            f = open("channels.txt","r",encoding="utf-8") 
-            channels = json.loads(f.read())
-            for channel in channels:
-                if(channel['keyword'] in video):
-                    self.fp = frame_processor(video_path,save_folder)
-                    self.fp.gen_caption_screenshots(**channel)
-
-    def run(self, video_ids=None):
-        video_folder = r'H:\字幕专家'
-        for video in t.files(video_folder):
-            if(not self.running):
-                break
-            if(video_ids==None):
-                if(not 'mp4' in video):
-                    continue
-                video_path = t.path_join(video_folder,video)
-                save_folder = video[:5]
-                f = open("channels.txt","r",encoding="utf-8") 
-                channels = json.loads(f.read())
-                for channel in channels:
-                    if(channel['keyword'] in video):
-                        self.fp = frame_processor(video_path,save_folder)
-                        self.fp.gen_caption_screenshots(**channel)
-            else:
-                for video_id in video_ids:
-                    if str(video_id) in video and ('mp4' in video):
-                        video_path = t.path_join(video_folder,video)
-                        save_folder = video[:5]
-                        f = open("channels.txt","r",encoding="utf-8") 
-                        channels = json.loads(f.read())
-                        for channel in channels:
-                            if(channel['keyword'] in video):
-                                print('hi25')
-                                self.fp = frame_processor(video_path,save_folder)
-                                self.fp.gen_caption_screenshots(**channel)          
-
-
-
-from threading import Thread
-import cv2, time
+    def run(self, video_path, caption_lower, caption_upper, white_threshold, consistency_threshold):
+        self.fp = frame_processor(video_path,'123')
+        self.fp.gen_caption_screenshots(caption_lower, caption_upper, white_threshold, consistency_threshold)
+        
+# from threading import Thread
+# import cv2, time
 
 class VideoStream(object):
     def __init__(self, src=0):
@@ -221,9 +156,4 @@ class VideoStream(object):
     def get_frame(self):
         return self.frame
    
-if __name__ == '__main__':
-    video_stream = VideoStream(r'H:\字幕君\五朋兼\$视频\1\wp149老公不在家，胖妹秘制荷叶鸡，鲜嫩多汁，手抱着啃得满嘴油，过瘾！【陈说美食】.mp4')
-    while True:
-        frame =  video_stream.get_frame()
-        time.sleep(200)
 
